@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrador</title>
+    <link rel="stylesheet" href="static/admin.css" />
+</head>
+<body>
+<div class="container">
+        <nav class="sidebar">
+            <h2>Administrador</h2>
+            <ul>
+                <li><a href="/admin">Libros</a></li>
+                <li><a href="{{ url_for('view_users') }}">Estudiantes</a></li>
+                <li><a href="/profile">{{ admin_name }}</a></li> 
+            </ul>
+        </nav>
+    <div class="main-content">
+            <form method="POST" action="/admin" enctype="multipart/form-data">
+                <h1>Agregar un Libro</h1>
+                <label for="title">Título:</label><br>
+                <input type="text" id="title" name="title" required><br><br>
+        
+                <label for="author">Autor:</label><br>
+                <input type="text" id="author" name="author"><br><br>
+        
+                <label for="genre">Género:</label><br>
+                <input type="text" id="genre" name="genre" ><br><br>
+
+                <label for="cover_image">Imagen de portada:</label><br>
+                <input type="file" id="cover_image" name="cover_image" accept="image/*"><br><br>
+        
+                <input type="submit" value="Agregar Libro">
+            </form>
+        <div>
+            <div class="search-container">
+                <form method="GET" action="/admin">
+                    <input type="text" name="search" placeholder="Buscar por título..." required>
+                    <input type="submit" value="Buscar">
+                </form>
+            </div>
+            
+            <div class="book-table">
+                <h2>Lista de Libros</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Autor</th>
+                            <th>Género</th>
+                            <th>Disponible</th>
+                            <th>Solicitado por</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for book in books %}
+                        <tr>
+                            <td>{{ book.title }}</td>
+                            <td>{{ book.author }}</td>
+                            <td>{{ book.genre }}</td>
+                            <td>{{ 'Sí' if book.available else 'No' }}</td>
+                            <td>
+                                {% if book.requested_by %}
+                                    {% set user = users | selectattr('id', '==', book.requested_by) | first %}
+                                    {{ user.email if user else 'Usuario no encontrado' }}
+                                {% else %}
+                                    No solicitado
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if book.cover_image %}
+                                    <img src="{{ url_for('static', filename=book.cover_image) }}" alt="Portada del libro" width="100">
+                                {% else %}
+                                    No hay portada
+                                {% endif %}
+                            </td>
+                            <td>
+                            <form method="POST" action="/admin">
+                                <input type="hidden" name="delete_id" value="{{ book.id }}">
+                                <button type="submit" class="delete-button" onclick="return confirm('¿Estás seguro de que quieres eliminar este libro?');">
+                                    <ion-icon name="trash-outline"></ion-icon>
+                                </button>
+                            </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4">No hay libros cargados.</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+</body>
+</html>

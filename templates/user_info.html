@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.name }}</title>
+    <link rel="stylesheet" href="static/client.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>{{ user.name }}</h1>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <form method="POST" action="/logout">
+            <button type="submit" onclick="return confirm('¿Estás seguro de que quieres Cerrar sesión?');">Cerrar sesión</button>
+        </form>
+        <a href="/main">Volver</a>
+    </div>
+</body>
+</html>

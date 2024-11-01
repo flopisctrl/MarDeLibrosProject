@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ book.title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='book.css') }}" />
+</head>
+<body>
+    <div class="container">
+        <div class="image-container">
+            <img src="{{ url_for('static', filename=book.cover_image) }}" alt="Portada del libro">
+        </div>
+        <div class="details-container">
+            <h1>{{ book.title }}</h1>
+            <p><strong>Autor:</strong> {{ book.author }}</p>
+            <p><strong>Género:</strong> {{ book.genre }}</p>
+            <form method="POST">
+                {% if book.available %}
+                    <button type="submit" onclick="return confirm('Confirma la solicitud por 15 días');">Solicitar préstamo</button>
+                {% else %}
+                    <button type="button" disabled>Libro Solicitado</button>
+                {% endif %}
+            </form>
+            <a href="/main">Volver</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,185 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+body {
+    font-family: "Poppins", sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.top-navbar {
+    display: flex;
+    align-items: center;
+    background-color: #1f4c69;
+    padding: 10px 20px;
+    height: 50px;
+    color: white;
+    z-index: 1000;
+}
+
+.top-navbar .menu-icon {
+    cursor: pointer;
+    font-size: 28px;
+    margin-right: 15px; 
+}
+
+.top-navbar .logo {
+    font-size: 22px;
+    font-weight: bold;
+    margin-right: 15px; 
+}
+
+.top-navbar .logo a {
+    text-decoration: none;
+    color: white;
+}
+
+.top-navbar .search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    margin-right: auto; 
+}
+
+.top-navbar .search-bar input {
+    border: none;
+    outline: none;
+    padding: 5px;
+    width: 200px;
+    font-size: 16px;
+}
+
+.top-navbar .search-bar button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: #1f4c69;
+}
+
+.top-navbar .user-icon {
+    font-size: 32px;
+    cursor: pointer;
+}
+
+.sidebar {
+    position: fixed;
+    left: -300px; 
+    top: 60px; 
+    width: 250px;
+    height: calc(100% - 60px); 
+    background: url("background.jpg") no-repeat;
+    background-size: cover;
+    background-position: center;
+    padding: 20px;
+    transition: left 0.3s ease;
+    color: white;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar.active {
+    left: 0; 
+}
+
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 20px 0;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.sidebar ul li a:hover {
+    text-decoration: underline;
+}
+.books-grid {
+    margin-left: 0;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+}
+
+.sidebar.active ~ .books-grid {
+    margin-left: 250px; 
+}
+
+@media screen and (max-width: 768px) {
+    .top-navbar .search-bar input {
+        width: 120px;
+    }
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-top: 20px;
+}
+
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.book-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    text-align: center;
+    display: block; 
+}
+
+.book-card img {
+    width: 100%; 
+    height: 300px; 
+    object-fit: cover; 
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.book-card h2 {
+    margin: 10px 0 5px 0;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.book-card p {
+    margin: 5px 0;
+    color: #666;
+    font-size: 0.9em;
+}
+
+@media (max-width: 768px) {
+    .books-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .books-grid {
+        grid-template-columns: 1fr;
+    }
+}
