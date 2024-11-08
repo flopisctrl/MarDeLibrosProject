@@ -45,13 +45,13 @@ def main():
         
         email = request.form["email"]
         password = request.form["password"]
-        session['user_id'] = user.id
-        #if 'user_id' not in session:
-        #    return redirect(url_for('login'))
+        
         user = User.query.filter_by(email=email).first()
         if user and user.password == password:
             session['user_id'] = user.id
             session['user_role'] = user.rol
+            if 'user_id' not in session:
+                return redirect(url_for('login'))
             if user.rol == "ADMIN":
                 admin_name = User.query.get(session['user_id']).name
                 books = Book.query.all()
@@ -74,7 +74,7 @@ def main():
         books = Book.query.all()  
         print(f"Número de libros disponibles: {len(books)}")
         return render_template("client_main.html", books=books)
-    
+
 
 
 @app.route("/register")
