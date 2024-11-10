@@ -67,6 +67,7 @@ body {
 .top-navbar .user-icon {
     font-size: 32px;
     cursor: pointer;
+    color: white;
 }
 
 .sidebar {

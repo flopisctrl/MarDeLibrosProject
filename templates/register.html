@@ -27,10 +27,10 @@
             <label>Contraseña</label>
           </div>
           <div class="remember-forgot">
-            <label
-              ><input type="checkbox" required />Acepto los términos y
-              condiciones</label
-            >
+            <label>
+              <input type="checkbox" name="accept_terms" required> Acepto los 
+              <a href="{{ url_for('terms') }}">Términos y Condiciones</a>
+            </label>
           </div>
           <button type="submit" class="btn">Registarse</button>
           <div class="login-register">

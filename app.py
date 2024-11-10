@@ -1,6 +1,8 @@
 
 from flask import Flask, flash, render_template, redirect, url_for, request, session
 from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail, Message
+from notifications import init_mail, send_notification, send_registration_email
 from functools import wraps
 db = SQLAlchemy()
 
@@ -15,6 +17,14 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USERNAME'] = 'soportemardelibros@gmail.com'
+app.config['MAIL_PASSWORD'] = 'anxrfjwufmmxxekz'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+init_mail(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -59,8 +69,9 @@ def main():
                 return render_template("admin_main.html", books=books, users=users, admin_name=admin_name)
             else:
                 if user.rol == "CLIENT":
+                    client_name = User.query.get(session['user_id']).name
                     books = Book.query.all()
-                    return render_template("client_main.html", books=books)
+                    return render_template("client_main.html", books=books, client_name=client_name)
         else: 
             error_message = "correo electrónico o contraseña incorrectos"
             return render_template("login.html", error=error_message)
@@ -95,6 +106,7 @@ def handle_register():
     db.session.commit()
 
     print(f"Usuario {name} guardado")
+    send_registration_email(email)
 
     return render_template("login.html")
 
@@ -184,7 +196,6 @@ def user_info(username):
 
     return render_template('user_info.html', user=user)
 
-#@app.route('/logout', methods=['POST'])
-#def logout():
-    session.pop('user_id', None)  
-    return redirect(url_for('login'))  
+@app.route("/terms")
+def terms():
+    return render_template("terms.html")  
