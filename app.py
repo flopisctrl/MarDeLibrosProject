@@ -1,8 +1,9 @@
-
 from flask import Flask, flash, render_template, redirect, url_for, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from notifications import init_mail, send_notification, send_registration_email
+import time
+import threading
 from functools import wraps
 db = SQLAlchemy()
 
@@ -13,6 +14,15 @@ from werkzeug.utils import secure_filename
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
+
+def bucle_infinito():
+    while True:
+        time.sleep(10)
+        print("control de libros")
+        
+thread = threading.Thread(target=bucle_infinito)
+thread.daemon = True  
+thread.start()
 
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 def allowed_file(filename):
@@ -199,3 +209,34 @@ def user_info(username):
 @app.route("/terms")
 def terms():
     return render_template("terms.html")  
+
+@app.route("/profile")
+def client_profile():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user = User.query.get(session['user_id'])
+
+    books = Book.query.filter_by(requested_by=user.id).all()
+
+    total_books = len(books)
+    books_read = sum(1 for book in books if book.available)
+
+    return render_template(
+        "client_profile.html",
+        user=user,
+        books=books,
+        books_read=books_read,
+        total_books=total_books
+    )
+
+@app.route("/mark_as_read/<int:book_id>", methods=['POST'])
+def mark_as_read(book_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    book = Book.query.get(book_id)
+    if book and book.requested_by == session['user_id']:
+        book.available = True
+        db.session.commit()
+        flash("Libro marcado como terminado", "success")
+    return redirect(url_for('client_profile'))

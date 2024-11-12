@@ -122,6 +122,39 @@ body {
     margin-left: 250px; 
 }
 
+.top-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #1f4c69;
+    padding: 10px 20px;
+    color: white;
+}
+
+.search-bar form {
+    display: flex;
+    align-items: center;
+}
+
+.nav-options {
+    display: flex;
+    gap: 15px;
+}
+
+.nav-options a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-options a:hover {
+    text-decoration: underline;
+}
+
+.user-icon a {
+    color: white;
+}
+
 @media screen and (max-width: 768px) {
     .top-navbar .search-bar input {
         width: 120px;

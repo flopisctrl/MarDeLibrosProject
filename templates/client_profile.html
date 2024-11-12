@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil del Cliente</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='client.css') }}">
+</head>
+<body>
+    <div class="profile-header">
+        <h2>Bienvenido, {{ user.name }}</h2>
+        <p>Aquí puedes ver y gestionar los libros que has solicitado.</p>
+        
+        {% if books %}
+            <div class="progress-bar-container">
+                <p>Progreso de lectura: {{ books_read }} / {{ total_books }} libros leídos</p>
+            </div>
+
+            {% if books_read == total_books and total_books > 0 %}
+                <p class="congratulations-message">¡Felicidades por llegar a la meta!</p>
+            {% endif %}
+        {% else %}
+            <p>No tienes libros en tu lista.</p>
+        {% endif %}
+    </div>
+
+    <div class="books-list">
+        {% if books %}
+            <ul>
+                {% for book in books %}
+                    <li>
+                        <div>
+                            <strong>{{ book.title }}</strong> - {{ book.author }}
+                        </div>
+                        {% if not book.available %}
+                            <form action="{{ url_for('mark_as_read', book_id=book.id) }}" method="post">
+                                <button type="submit">Marcar como terminado</button>
+                            </form>
+                        {% else %}
+                            <span>Terminado</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No tienes libros en tu lista.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
