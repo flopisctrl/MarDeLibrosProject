@@ -1,7 +1,7 @@
 from flask import Flask, flash, render_template, redirect, url_for, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
-from notifications import init_mail, send_notification, send_registration_email
+from notifications import init_mail, send_book_request_notification, send_registration_email
 import time
 import threading
 from functools import wraps
@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 def bucle_infinito():
     while True:
-        time.sleep(10)
+        time.sleep(3600) #cada 1 hora
         print("control de libros")
         
 thread = threading.Thread(target=bucle_infinito)
@@ -48,7 +48,7 @@ with app.app_context():
 def login_required_admin(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'user_id' not in session: #or session.get('user_role') != 'ADMIN'#
+        if 'user_id' not in session or session.get('user_role') != 'ADMIN':
             flash('Debes iniciar sesión para acceder a esta página.', 'warning')
             return redirect(url_for('login'))  
         return f(*args, **kwargs)
@@ -184,6 +184,8 @@ def loan_book(book_id):
         book.available = False
         book.requested_by = session['user_id']
         db.session.commit()
+        user = User.query.get(session['user_id'])
+        send_book_request_notification(user.email,book.title)
         print(f"Solicitando libro {book.title} por el usuario ID: {session['user_id']}")
         flash("Libro solicitado con éxito", "success")
         return redirect('/main')
@@ -240,3 +242,16 @@ def mark_as_read(book_id):
         db.session.commit()
         flash("Libro marcado como terminado", "success")
     return redirect(url_for('client_profile'))
+
+@app.route('/admin/returned', methods=['POST'])
+def mark_as_returned():
+    book_id = request.form.get('book_id')
+    book = Book.query.get(book_id)
+    
+    if book:
+        book.available = True
+        book.requested_by = None
+        db.session.commit()
+        print(f"El libro {book.title} ha sido devuelto")
+
+    return redirect(url_for('admin'))

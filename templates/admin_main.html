@@ -83,6 +83,14 @@
                                 </button>
                             </form>
                             </td>
+                            <td>
+                                <form method="POST" action="/admin/returned">
+                                    <input type="hidden" name="book_id" value="{{ book.id }}">
+                                    <button type="submit" class="returned-button" onclick="return confirm('¿Estás seguro de que este libro ha sido devuelto?');">
+                                        Devuelto
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     {% else %}
                         <tr>
