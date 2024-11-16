@@ -255,3 +255,7 @@ def mark_as_returned():
         print(f"El libro {book.title} ha sido devuelto")
 
     return redirect(url_for('admin'))
+
+@app.route('/about_us')
+def about_us():
+    return render_template("about_us.html")
