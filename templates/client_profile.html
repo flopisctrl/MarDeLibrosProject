@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil del Cliente</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='client.css') }}">
+    <title>Perfil</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
     <link rel="icon" href="static/favicon.jpg" />
 </head>
 <body>
@@ -64,5 +64,6 @@
             <p>Aún no tienes libros leídos en tu historial.</p>
         {% endif %}
     </div>
+    <a href="/main" class="back-button">Volver a Inicio</a>
 </body>
 </html>

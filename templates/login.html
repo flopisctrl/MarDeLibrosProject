@@ -8,6 +8,13 @@
     <link rel="icon" href="static/favicon.jpg" /> <!-- cambiar por uno sin fondo pq se ve feo -->
   </head>
   <body>
+    <header>
+      <h2 class="logo">Mar de Libros</h2>
+      <nav class="navigation">
+        <a href="{{ url_for('about_us') }}">Sobre Nosotros</a>
+        <a href="mailto:soportemardelibros@gmail.com.com">Contacto</a>
+      </nav>
+    </header>
     <div class="wrapper">
       <div class="form-box login">
         <h2>Iniciar Sesión</h2>
@@ -42,7 +49,6 @@
         </form>
       </div>
     </div>
-    <a href="{{ url_for('about_us') }}" class="about-button">Acerca de Nosotros</a>
 
     <script
       type="module"
