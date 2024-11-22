@@ -6,11 +6,17 @@
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
 }
-
+html, body {
+    height: 100%; 
+}
 body {
-    background: url("background.jpg") no-repeat;
-    backdrop-filter: blur(5px);
-    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    background: url("background.jpg") no-repeat center center fixed; 
+    background-size: cover; 
+    height: 100%; 
+    padding: 0;
 }
 
 .heading{

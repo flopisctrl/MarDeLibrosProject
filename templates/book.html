@@ -24,6 +24,7 @@
                 {% endif %}
             </form>
             <a href="/main">Volver</a>
+            <a href="{{ url_for('book_reviews', book_id=book.id) }}">Ver reseñas</a>
         </div>
     </div>
 </body>

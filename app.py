@@ -7,11 +7,13 @@ import threading
 from functools import wraps
 db = SQLAlchemy()
 
-from models import db, User, Book
+from models import db, User, Book, Review
 import os
 from werkzeug.utils import secure_filename
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+mysql_url = "mysql+mysqlconnector://root:libros2024@localhost/libros"
+sqlite_url = "sqlite:///users.db"
 
 app = Flask(__name__)
 
@@ -19,6 +21,10 @@ def bucle_infinito():
     while True:
         time.sleep(3600) #cada 1 hora
         print("control de libros")
+        books = Book.query.all()
+        #for book in books:
+        #    if book.due_date < timestamp.now():
+        #        print("control de libros")
         
 thread = threading.Thread(target=bucle_infinito)
 thread.daemon = True  
@@ -36,7 +42,7 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 init_mail(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = mysql_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'clave_secreta'
 
@@ -191,6 +197,31 @@ def loan_book(book_id):
         return redirect('/main')
 
     return render_template("book.html", book=book)
+
+@app.route("/book/<int:book_id>/reviews", methods=["GET", "POST"])
+def book_reviews(book_id):
+    book = Book.query.get(book_id)
+    if not book:
+        return "Libro no encontrado", 404
+
+    if request.method == "POST":
+        if 'user_id' not in session:
+            flash("Debes iniciar sesión para agregar una reseña.", "warning")
+            return redirect(url_for('login'))
+        
+        content = request.form.get("review_content")
+        if not content:
+            flash("La reseña no puede estar vacía.", "danger")
+            return redirect(url_for("book_reviews", book_id=book_id))
+  
+        new_review = Review(content=content, user_id=session['user_id'], book_id=book_id)
+        db.session.add(new_review)
+        db.session.commit()
+        flash("Reseña añadida con éxito.", "success")
+        return redirect(url_for("book_reviews", book_id=book_id))
+
+    reviews = Review.query.filter_by(book_id=book_id).all()
+    return render_template("book_reviews.html", book=book, reviews=reviews)
 
 @app.route("/admin/estudiantes")
 @login_required_admin  
