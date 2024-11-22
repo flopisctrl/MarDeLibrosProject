@@ -221,15 +221,18 @@ def client_profile():
 
     books = Book.query.filter_by(requested_by=user.id).all()
 
+    read_books = Book.query.filter_by(requested_by=user.id, available=True).all()
+
     total_books = len(books)
-    books_read = sum(1 for book in books if book.available)
+    books_read = len(read_books)
 
     return render_template(
         "client_profile.html",
         user=user,
         books=books,
         books_read=books_read,
-        total_books=total_books
+        total_books=total_books,
+        read_books=read_books 
     )
 
 @app.route("/mark_as_read/<int:book_id>", methods=['POST'])

@@ -47,5 +47,22 @@
             <p>No tienes libros en tu lista.</p>
         {% endif %}
     </div>
+    <div class="read-books-history">
+        <h3>Historial de libros leídos</h3>
+        {% if read_books %}
+            <ul>
+                {% for book in read_books %}
+                    <li>
+                        <div>
+                            <strong>{{ book.title }}</strong> - {{ book.author }}
+                        </div>
+                        <span>Leído</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Aún no tienes libros leídos en tu historial.</p>
+        {% endif %}
+    </div>
 </body>
 </html>

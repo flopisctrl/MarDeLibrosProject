@@ -18,3 +18,11 @@ class Book(db.Model):
     available = db.Column(db.Boolean, default=True)
     cover_image = db.Column(db.String(255), nullable=True)
     requested_by = db.Column(db.Integer, db.ForeignKey('user.id'), default=None)
+
+class Review(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
+    user = db.relationship('User', backref='reviews')
+    book = db.relationship('Book', backref='reviews')
