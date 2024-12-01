@@ -15,10 +15,11 @@ class Book(db.Model):
     author = db.Column(db.String(100), nullable=False, default="")
     genre = db.Column(db.String(50), nullable=False, default="")
     added_date = db.Column(db.Date, default=date.today)
-    due_date = db.Column(db.Date, nullable=True)
+    expiration_date = db.Column(db.Date, nullable=True)
     available = db.Column(db.Boolean, default=True)
     cover_image = db.Column(db.String(255), nullable=True)
     requested_by = db.Column(db.Integer, db.ForeignKey('user.id'), default=None)
+    notification_sent = db.Column(db.Boolean, default=False)
 
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)

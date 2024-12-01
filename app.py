@@ -1,55 +1,78 @@
 from flask import Flask, flash, render_template, redirect, url_for, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
-from notifications import init_mail, send_book_request_notification, send_registration_email
-import time
-import threading
-from functools import wraps
-db = SQLAlchemy()
-
-from models import db, User, Book, Review
+from notifications import init_mail
 import os
 from werkzeug.utils import secure_filename
+from apscheduler.schedulers.background import BackgroundScheduler
+import time
+import threading
+from datetime import timedelta,datetime
+from functools import wraps
+
+db = SQLAlchemy()
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-mysql_url = "mysql+mysqlconnector://root:libros2024@localhost/libros"
+#mysql_url = "mysql+mysqlconnector://root:libros2024@localhost/libros"
 sqlite_url = "sqlite:///users.db"
 
-app = Flask(__name__)
+def create_app():
+    app = Flask(__name__)
+    app.config['SQLALCHEMY_DATABASE_URI'] = sqlite_url
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-def bucle_infinito():
-    while True:
-        time.sleep(3600) #cada 1 hora
-        print("control de libros")
-        books = Book.query.all()
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USERNAME'] = 'soportemardelibros@gmail.com'
+    app.config['MAIL_PASSWORD'] = 'anxrfjwufmmxxekz'
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USE_SSL'] = False
+    app.secret_key = 'clave_secreta'
+    
+    app.config['UPLOAD_FOLDER'] = 'static/uploads'
+
+    # Inicializa la aplicación con SQLAlchemy
+    db.init_app(app)
+    init_mail(app)
+
+    with app.app_context():
+        import models
+        import notifications
+        db.create_all()
+
+    return app
+
+app = create_app()
+from notifications import init_mail, send_book_request_notification, send_registration_email, send_expiration_warnings
+from models import User, Book, Review
+
+#def bucle_infinito():
+    #while True:
+        #time.sleep(3600) #cada 1 hora
+        #print("control de libros")
+        #books = Book.query.all()
         #for book in books:
         #    if book.due_date < timestamp.now():
         #        print("control de libros")
         
-thread = threading.Thread(target=bucle_infinito)
-thread.daemon = True  
-thread.start()
+#thread = threading.Thread(target=bucle_infinito)
+#thread.daemon = True  
+#thread.start()
 
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USERNAME'] = 'soportemardelibros@gmail.com'
-app.config['MAIL_PASSWORD'] = 'anxrfjwufmmxxekz'
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
-init_mail(app)
+#bucle para enviar notificaciones de devolucion cada 1 hora
+def start_scheduler():
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(func=send_expiration_warnings, trigger="interval", hours=1)
+    scheduler.start()
 
-app.config['SQLALCHEMY_DATABASE_URI'] = mysql_url
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'clave_secreta'
+    # Asegurarse de detener el scheduler al cerrar la app
+    import atexit
+    atexit.register(lambda: scheduler.shutdown())
 
-db.init_app(app)
-
-with app.app_context():
-    db.create_all()
+start_scheduler()
 
 def login_required_admin(f):
     @wraps(f)
@@ -189,6 +212,8 @@ def loan_book(book_id):
         #preguntar user en sesion
         book.available = False
         book.requested_by = session['user_id']
+        now = datetime.now()
+        book.expiration_date = now + timedelta(hours=336)
         db.session.commit()
         user = User.query.get(session['user_id'])
         send_book_request_notification(user.email,book.title)
@@ -285,6 +310,8 @@ def mark_as_returned():
     if book:
         book.available = True
         book.requested_by = None
+        book.notification_sent = False
+        book.expiration_date = None
         db.session.commit()
         print(f"El libro {book.title} ha sido devuelto")
 

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Reseñas de {{ book.title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='reviews.css') }}">
 </head>
 <body>
     <h1>Reseñas de "{{ book.title }}"</h1>
