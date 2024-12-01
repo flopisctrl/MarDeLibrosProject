@@ -2,7 +2,7 @@ from flask_mail import Mail, Message
 from flask import current_app
 from datetime import timedelta, datetime
 from models import Book
-from app import db
+from extensions import db
 import logging
 
 mail = Mail()

@@ -1,7 +1,9 @@
 from flask import Flask, flash, render_template, redirect, url_for, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
-from notifications import init_mail
+from notifications import init_mail, send_book_request_notification, send_registration_email, send_expiration_warnings
+from models import User, Book, Review
+from extensions import db 
 import os
 from werkzeug.utils import secure_filename
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -9,8 +11,6 @@ import time
 import threading
 from datetime import timedelta,datetime
 from functools import wraps
-
-db = SQLAlchemy()
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 #mysql_url = "mysql+mysqlconnector://root:libros2024@localhost/libros"
@@ -36,28 +36,12 @@ def create_app():
     init_mail(app)
 
     with app.app_context():
-        import models
-        import notifications
         db.create_all()
-
+    
     return app
 
 app = create_app()
-from notifications import init_mail, send_book_request_notification, send_registration_email, send_expiration_warnings
-from models import User, Book, Review
 
-#def bucle_infinito():
-    #while True:
-        #time.sleep(3600) #cada 1 hora
-        #print("control de libros")
-        #books = Book.query.all()
-        #for book in books:
-        #    if book.due_date < timestamp.now():
-        #        print("control de libros")
-        
-#thread = threading.Thread(target=bucle_infinito)
-#thread.daemon = True  
-#thread.start()
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
